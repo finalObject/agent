@@ -78,6 +78,28 @@ public class Device {
 		}
 		return sState; 
 	}
+	public static String getCmdAboutDevices(Device[] devices,String cmd){
+		String cmdFormat = "#";
+		int device = Device.findDevice(devices, cmd);
+		//如果设备寻找错误，停止生成指令，返回#
+		if (device==-1){
+			return cmdFormat;
+		}
+		int sState = Device.getSettingState(devices[device], cmd);
+		//如果状态指定错误，停止生成指令，返回#
+		if (sState==-1){
+			return cmdFormat;
+		}
+		int deviceAvailable = -1;
+		//如果设备正确，状态更改指令正确，生成指令
+		for (int i=0;i<devices.length;i++){
+			if (devices[i].possChiness!=null){
+				cmdFormat = cmdFormat+String.format("%02d%03d", devices[i].id,devices[i].state); 
+			}
+		}
+		cmdFormat = cmdFormat+"!";
+		return cmd;
+	}
 	public static void main(String[] agrs){
 		Device[] devices = new Device[]{
 				new Device(1, "light",new String[]{"灯","电灯"}, false, 0),

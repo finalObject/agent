@@ -20,6 +20,7 @@ public class Agent {
 //事件记忆功能（某个条件下，包括环境调节。进行某种操作）
 //对某些事件产生试探性提问，根据回答进行相应操作
 //某些事件直接进行操作
+	
 	private String name;
 	private String master;
 	private boolean isWaiting;//询问主人等待确认的指令，获得许可
@@ -80,4 +81,5 @@ public class Agent {
 				new Device(6,"temperature",null,true,0)
 		};
 	}
+	
 }
