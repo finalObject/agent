@@ -36,6 +36,9 @@ public class Device {
 	public String getName(){
 		return this.name;
 	}
+	public String[] getPossChiness(){
+		return this.possChiness;
+	}
 	public static void displayDevices(Device[] devices){
 		for (int i=0;i<devices.length;i++){
 			System.out.print(devices[i].name+":"+devices[i].state+";");		

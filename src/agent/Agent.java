@@ -81,5 +81,35 @@ public class Agent {
 				new Device(6,"temperature",null,true,0)
 		};
 	}
-	
+	public String dealWithDevices(Device[] devices,String cmd){
+		String cmdFormat="#";
+		int device = Device.findDevice(devices, cmd);
+		//如果设备没有找到，而且没有上一语句的设备，返回#
+		if (device==-1){
+				if (lastDevice!=-1){
+					device = lastDevice;
+				}else{
+					return cmdFormat;
+				}
+		}
+		int sState = Device.getSettingState(devices[device], cmd);
+		//如果状态指定错误，停止生成指令，返回#
+		if (sState==-1){
+			return cmdFormat;
+		}
+		//如果设备正确，状态更改指令正确，生成指令
+		for (int i=0;i<devices.length;i++){
+			if (devices[i].getPossChiness()!=null){
+				if (i==device){
+					cmdFormat = cmdFormat+String.format("%03d", device,sState);
+				}else{
+				cmdFormat = cmdFormat+String.format("%03d", devices[i].getState()); 
+				}
+			}
+		}
+		cmdFormat = cmdFormat+"!";
+		//改变状态
+		devices[device].setState(sState);
+		return cmdFormat;
+	}
 }
