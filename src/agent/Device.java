@@ -1,5 +1,7 @@
 package agent;
 
+import java.util.Scanner;
+
 //@author finalObject
 //        http://www.finalobject.cn
 //        i@finalobject.cn
@@ -34,9 +36,18 @@ public class Device {
 	public String getName(){
 		return this.name;
 	}
+	public static void displayDevices(Device[] devices){
+		for (int i=0;i<devices.length;i++){
+			System.out.print(devices[i].name+":"+devices[i].state+";");		
+		}
+		System.out.println();
+	}
 	public static int findDevice(Device[] devices,String cmd){
 		int device = -1;
 		for (int i=0;i<devices.length;i++){
+			if (devices[i].possChiness==null){
+				continue;
+			}
 			for (int j =0;j<devices[i].possChiness.length;j++){
 				if (cmd.indexOf(devices[i].possChiness[j])!=-1){
 					device = i;
@@ -50,7 +61,7 @@ public class Device {
 		return device;
 	}
 	public static int getSettingState(Device device,String cmd){
-		int sState =0;
+		int sState = 0;
 		if (device.getType()==false){	
 			//数字器件
 			if (cmd.indexOf("开")!=-1&&device.getState()!=1){
@@ -78,7 +89,9 @@ public class Device {
 		}
 		return sState; 
 	}
-	public static String getCmdAboutDevices(Device[] devices,String cmd){
+	//这个函数啊，封装在这里里面好像不太合适
+	//别用了，放到Agent里去吧，我就不删除了，你别用了
+	public static String getCmdAndChangeStates(Device[] devices,String cmd){
 		String cmdFormat = "#";
 		int device = Device.findDevice(devices, cmd);
 		//如果设备寻找错误，停止生成指令，返回#
@@ -90,17 +103,23 @@ public class Device {
 		if (sState==-1){
 			return cmdFormat;
 		}
-		int deviceAvailable = -1;
 		//如果设备正确，状态更改指令正确，生成指令
 		for (int i=0;i<devices.length;i++){
 			if (devices[i].possChiness!=null){
-				cmdFormat = cmdFormat+String.format("%02d%03d", devices[i].id,devices[i].state); 
+				if (i==device){
+					cmdFormat = cmdFormat+String.format("%03d", device,sState);
+				}else{
+				cmdFormat = cmdFormat+String.format("%03d", devices[i].id,devices[i].state); 
+				}
 			}
 		}
 		cmdFormat = cmdFormat+"!";
-		return cmd;
+		//改变状态
+		devices[device].setState(sState);
+		return cmdFormat;
 	}
 	public static void main(String[] agrs){
+		Scanner in = new Scanner(System.in);
 		Device[] devices = new Device[]{
 				new Device(1, "light",new String[]{"灯","电灯"}, false, 0),
 				new Device(1, "door",new String[]{"门"}, false, 0),
@@ -110,9 +129,13 @@ public class Device {
 				new Device(5,"intensity",null,true,0),
 				new Device(6,"temperature",null,true,0)
 		};
-		String cmd = "打开音响";
-		int device = Device.findDevice(devices, cmd);
-		int sState = Device.getSettingState(devices[device], cmd);
-		System.out.println(devices[device].name+":"+sState);
+		Device.displayDevices(devices);
+		String cmd;
+		while (true){
+			cmd = in.nextLine();
+			System.out.println(Device.getCmdAndChangeStates(devices, cmd));
+			Device.displayDevices(devices);
+		}
+
 	}
 }
