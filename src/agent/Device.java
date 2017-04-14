@@ -7,18 +7,18 @@ import java.util.Scanner;
 //        i@finalobject.cn
 //        https://github.com/finalObject
 //@date 2017.4.11 21:27:32
-//@version 1.0
+//@version 2.1
 public class Device {
 	private int id ;
 	private String name;
 	private String[] possChiness;
-	private boolean type ;//anology is true, digital is false
+	private int stateRange ;//anology is true, digital is false
 	private int state;
-	public Device(int id,String name,String[] possChiness,boolean type,int state){
+	public Device(int id,String name,String[] possChiness,int stateRange,int state){
 		this.id=id;
 		this.name=name;
 		this.possChiness=possChiness;
-		this.type=type;
+		this.stateRange = stateRange;
 		this.state=state;
 	}
 	public void setState(int state){
@@ -27,8 +27,8 @@ public class Device {
 	public int getState(){
 		return this.state;
 	}
-	public boolean getType(){
-		return this.type;
+	public int getStateRange(){
+		return this.stateRange;
 	}
 	public int getId(){
 		return this.id;
@@ -64,31 +64,36 @@ public class Device {
 		return device;
 	}
 	public static int getSettingState(Device device,String cmd){
-		int sState = 0;
-		if (device.getType()==false){	
-			//数字器件
-			if (cmd.indexOf("开")!=-1&&device.getState()!=1){
-				sState = 1;
-			}else if (((cmd.indexOf("关")!=-1)||(cmd.indexOf("闭")!=-1))&&(device.getState()!=0)){
-				sState = 0;
-			}else{
-				sState = -1;
-			}
-		}else {
-			//模拟器件
-			if (((cmd.indexOf("关")!=-1)||(cmd.indexOf("闭")!=-1))&&(device.getState()!=0)){
-				sState = 0;
-			}else if(cmd.indexOf("最大")!=-1&&device.getState()<255){
-				sState = 255;
-			}else if((cmd.indexOf("大")!=-1||(cmd.indexOf("开")!=-1))&&device.getState()<255){
-				sState = device.getState()+64;
-				if (sState>255){sState=255;}
-			}else if(cmd.indexOf("小")!=-1&&device.getState()>0){
-				sState = device.getState()-64;
-				if (sState<0){sState=0;}
-			}else{
-				sState=-1;
-			}
+		int sState = -1;
+		//先进行指定状态判定
+		if (((cmd.indexOf("最大")!=-1)||(cmd.indexOf("最高")!=-1))&&(device.getState()!=device.getStateRange())){
+			sState = device.getStateRange();
+		}else if(((cmd.indexOf("最小")!=-1)||(cmd.indexOf("最低")!=-1))&&(device.getState()>1)){
+			sState = 1;
+		}else if(((cmd.indexOf("五")!=-1)||(cmd.indexOf("5")!=-1))&&(device.getState()!=5)&&(device.getStateRange()>=5)){
+			sState = 5;
+		}else if(((cmd.indexOf("四")!=-1)||(cmd.indexOf("4")!=-1))&&(device.getState()!=4)&&(device.getStateRange()>=4)){
+			sState = 4;
+		}else if(((cmd.indexOf("三")!=-1)||(cmd.indexOf("3")!=-1))&&(device.getState()!=3)&&(device.getStateRange()>=3)){
+			sState = 3;
+		}else if(((cmd.indexOf("二")!=-1)||(cmd.indexOf("2")!=-1))&&(device.getState()!=2)&&(device.getStateRange()>=2)){
+			sState = 2;
+		}else if(((cmd.indexOf("一")!=-1)||(cmd.indexOf("1")!=-1))&&(device.getState()!=1)&&(device.getStateRange()>=1)&&
+                (cmd.indexOf("小")==-1)&&(cmd.indexOf("低")==-1)
+				){
+			sState = 1;
+		}
+		//然后进行增减判定
+		else  if(((cmd.indexOf("大")!=-1)||(cmd.indexOf("高")!=-1))&&(device.getState()<device.getStateRange())){
+			sState = device.getState()+1;
+		}else if(((cmd.indexOf("小")!=-1)||(cmd.indexOf("低")!=-1))&&(device.getState()>0)){
+			sState = device.getState()-1;
+		}
+		//最后进行开关判定
+		else if(((cmd.indexOf("开")!=-1)||(cmd.indexOf("启动")!=-1))&&(device.getState()==0)){
+			sState = 1;
+		}else if(((cmd.indexOf("关")!=-1)||(cmd.indexOf("闭")!=-1))&&(device.getState()!=0)){
+			sState = 0;
 		}
 		return sState; 
 	}
@@ -124,13 +129,13 @@ public class Device {
 	public static void main(String[] agrs){
 		Scanner in = new Scanner(System.in);
 		Device[] devices = new Device[]{
-				new Device(1, "light",new String[]{"灯","电灯"}, false, 0),
-				new Device(1, "door",new String[]{"门"}, false, 0),
-				new Device(2, "fan", new String[]{"风扇","电扇"},true, 0),
-				new Device(3, "musicSwitch", new String[]{"音乐","音响"},false, 0),
-				new Device(4, "songs", new String[]{},true, 0),
-				new Device(5,"intensity",null,true,0),
-				new Device(6,"temperature",null,true,0)
+				new Device(1, "light",new String[]{"灯","电灯"}, 1, 0),
+				new Device(1, "door",new String[]{"门"}, 1, 0),
+				new Device(2, "fan", new String[]{"风扇","电扇"},5, 0),
+				new Device(3, "musicSwitch", new String[]{"音乐","音响"},1, 0),
+				new Device(4, "songs", new String[]{},1, 0),
+				new Device(5,"intensity",null,1,0),
+				new Device(6,"temperature",null,1,0)
 		};
 		Device.displayDevices(devices);
 		String cmd;

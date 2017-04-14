@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
+
+import javax.swing.LayoutStyle;
 
 // @author finalObject
 //         http://www.finalobject.cn
@@ -32,7 +35,15 @@ public class Agent {
 	private Device[] devices;//拥有设备，记录当前状态，可以进行的操作
 										//传感器状态，人的状态，也放在这里面
 	public static void main(String[] args){
-		int[] a;
+		Scanner in = new Scanner(System.in);
+		Agent agent = new Agent("1","2");
+		String  cmd ;
+		while (true){
+			cmd=in.nextLine();
+			System.out.println(agent.dealWithDevices(cmd));
+			Device.displayDevices(agent.devices);
+			System.out.println("last device:"+agent.lastDevice);
+		}
 	}
 	public Agent(String name,String master){
 		this.name=name;
@@ -46,7 +57,7 @@ public class Agent {
 		lastReply=-1;
 		lastDevice=-1;
 		//初始化reply
-		reply =new String[9][];
+		reply =new String[10][];
 		//reply index 0 -- jobs done
 		reply[0]=new String[]{"好的","没问题","不用客气"};
 		//reply index 1 -- what's else
@@ -72,16 +83,16 @@ public class Agent {
 		
 		//初始化devices
 		devices = new Device[]{
-				new Device(1, "light",new String[]{"灯","电灯"}, false, 0),
-				new Device(1, "door",new String[]{"门"}, false, 0),
-				new Device(2, "fan", new String[]{"风扇","电扇"},true, 0),
-				new Device(3, "musicSwitch", new String[]{"音乐","音响"},false, 0),
-				new Device(4, "songs", new String[]{},true, 0),
-				new Device(5,"intensity",null,true,0),
-				new Device(6,"temperature",null,true,0)
+				new Device(1, "light",new String[]{"灯","电灯"}, 1, 0),
+				new Device(1, "door",new String[]{"门"}, 1, 0),
+				new Device(2, "fan", new String[]{"风扇","电扇"},5, 0),
+				new Device(3, "musicSwitch", new String[]{"音乐","音响"},1, 0),
+				new Device(4, "songs", new String[]{},1, 0),
+				new Device(5,"intensity",null,1,0),
+				new Device(6,"temperature",null,1,0)
 		};
 	}
-	public String dealWithDevices(Device[] devices,String cmd){
+	public String dealWithDevices(String cmd){
 		String cmdFormat="#";
 		int device = Device.findDevice(devices, cmd);
 		//如果设备没有找到，而且没有上一语句的设备，返回#
@@ -92,6 +103,7 @@ public class Agent {
 					return cmdFormat;
 				}
 		}
+		lastDevice=device;
 		int sState = Device.getSettingState(devices[device], cmd);
 		//如果状态指定错误，停止生成指令，返回#
 		if (sState==-1){
@@ -101,9 +113,9 @@ public class Agent {
 		for (int i=0;i<devices.length;i++){
 			if (devices[i].getPossChiness()!=null){
 				if (i==device){
-					cmdFormat = cmdFormat+String.format("%03d", device,sState);
+					cmdFormat = cmdFormat+String.format("%d",sState);
 				}else{
-				cmdFormat = cmdFormat+String.format("%03d", devices[i].getState()); 
+				cmdFormat = cmdFormat+String.format("%d", devices[i].getState()); 
 				}
 			}
 		}
