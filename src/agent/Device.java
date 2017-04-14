@@ -128,21 +128,13 @@ public class Device {
 	}
 	public static void main(String[] agrs){
 		Scanner in = new Scanner(System.in);
-		Device[] devices = new Device[]{
-				new Device(1, "light",new String[]{"灯","电灯"}, 1, 0),
-				new Device(1, "door",new String[]{"门"}, 1, 0),
-				new Device(2, "fan", new String[]{"风扇","电扇"},5, 0),
-				new Device(3, "musicSwitch", new String[]{"音乐","音响"},1, 0),
-				new Device(4, "songs", new String[]{},1, 0),
-				new Device(5,"intensity",null,1,0),
-				new Device(6,"temperature",null,1,0)
-		};
-		Device.displayDevices(devices);
-		String cmd;
+		Agent agent = new Agent("1","2");
+		String  cmd ;
 		while (true){
-			cmd = in.nextLine();
-			System.out.println(Device.getCmdAndChangeStates(devices, cmd));
-			Device.displayDevices(devices);
+			cmd=in.nextLine();
+			System.out.println(agent.dealWithDevices(cmd));
+			Device.displayDevices(agent.getDevices());
+			System.out.println("last device:"+agent.getLastDevice());
 		}
 
 	}
