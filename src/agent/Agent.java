@@ -31,9 +31,11 @@ public class Agent {
 	private ArrayList<String> hisCmd;//记录历史指令
 	private int lastReply;//记录上一个语句中回复种类
 	private int lastDevice;//记录上一条指令操作的设备，可能下一条指令可以不说明设备直接操作
-	private String[][] reply;//面对指令的不同回复内容（索引数组
+	private String[][] replies;//面对指令的不同回复内容（索引数组
 	private Device[] devices;//拥有设备，记录当前状态，可以进行的操作
 										//传感器状态，人的状态，也放在这里面
+	private String cmdFormat;//储存单次回复指令
+	private String word;//储存单次回复的文字内容
 	public static void main(String[] args){
 		Scanner in = new Scanner(System.in);
 		Agent agent = new Agent("1","2");
@@ -57,29 +59,29 @@ public class Agent {
 		lastReply=-1;
 		lastDevice=-1;
 		//初始化reply
-		reply =new String[10][];
+		replies =new String[10][];
 		//reply index 0 -- jobs done
-		reply[0]=new String[]{"好的","没问题","不用客气"};
+		replies[0]=new String[]{"好的","没问题","不用客气"};
 		//reply index 1 -- what's else
-		reply[1]=new String[]{"没有别的了吗","可以了吗"};
+		replies[1]=new String[]{"没有别的了吗","可以了吗"};
 		//reply index 2 -- who am i
-		reply[2]=new String[]{"你是我的宝贝甜蜜饯","你是"+master+",不过你叫什么我就不知道了"};
+		replies[2]=new String[]{"你是我的宝贝甜蜜饯","你是"+master+",不过你叫什么我就不知道了"};
 		//reply index 3 -- who are u
-		reply[3]=new String[]{"我是"+name+",宇宙第一管家，越用越贴心"};
+		replies[3]=new String[]{"我是"+name+",宇宙第一管家，越用越贴心"};
 		//reply index 4 -- i like u
-		reply[4]=new String[]{"我也喜欢你","对不起，"+master+",我只是一个机器","好巧"};
+		replies[4]=new String[]{"我也喜欢你","对不起，"+master+",我只是一个机器","好巧"};
 		//reply index 5 -- do u have a bf
-		reply[5]=new String[]{"其实我和空调中控系统以为眉来眼去两个月了","单身才能做好管家！"};
+		replies[5]=new String[]{"其实我和空调中控系统以为眉来眼去两个月了","单身才能做好管家！"};
 		//reply index 6 -- can u speak other language
-		reply[6]=new String[]{"我什么语言都会说，就是我的工程师没有把选择权交给用户而已",
+		replies[6]=new String[]{"我什么语言都会说，就是我的工程师没有把选择权交给用户而已",
 				"你要是真的有需要，就去找我的工程师"};
 		//reply index 7 -- nice weather
-		reply[7]=new String[]{"还行吧，对我来讲无所谓","这么好的天气应该出去走走，家里有我照顾",
+		replies[7]=new String[]{"还行吧，对我来讲无所谓","这么好的天气应该出去走走，家里有我照顾",
 				"你开心就好"};
 		//reply index 8 -- i am busy today
-		reply[8]=new String[]{"那有我可以帮忙的吗？","需要一些"};
+		replies[8]=new String[]{"那有我可以帮忙的吗？","需要一些"};
 		//reply index last -- still learning,function limited
-		reply[9]=new String[]{"抱歉我还理解不了你说的话","我还在学习，现在还听不懂你说的话"};
+		replies[9]=new String[]{"抱歉我还理解不了你说的话","我还在学习，现在还听不懂你说的话"};
 		
 		//初始化devices
 		devices = new Device[]{
@@ -92,8 +94,9 @@ public class Agent {
 				new Device(6,"temperature",null,1,0)
 		};
 	}
+	//基本调试正确，可以正常使用
 	public String dealWithDevices(String cmd){
-		String cmdFormat="#";
+		cmdFormat="#";
 		int device = Device.findDevice(devices, cmd);
 		//如果设备没有找到，而且没有上一语句的设备，返回#
 		if (device==-1){
@@ -124,4 +127,25 @@ public class Agent {
 		devices[device].setState(sState);
 		return cmdFormat;
 	}
+	//to be continuing
+	public String dealWithReply(String cmd){
+		int reply = -1;
+		//确定返回种类
+		//随机选取返回语句
+		int randIndex =-1;
+		word = replies[reply][randIndex];
+		return word;
+	}
+	//main function.差好多啊
+	public void step(String cmd){
+		//先处理Devices
+		cmdFormat = dealWithDevices(cmd);
+		//有结果的话发送数据，规定回复文本种类为job done
+		if (cmdFormat.equals("#")==false){
+			
+		}
+		//没有结果的话，处理一下，判断回复种类
+		//反馈文本
+	}
+	//差一个后台处理，控制自动判断的函数
 }
